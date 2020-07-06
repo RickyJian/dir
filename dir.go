@@ -4,6 +4,20 @@ import (
 	"errors"
 )
 
+// Dir defines basic directory struct
+type Dir struct {
+	path       string
+	nodes      []string
+	fileName   string
+	files      []string
+	permission string
+}
+
+// New new dir
+func New(path string) *Dir {
+	return new(Dir)
+}
+
 // IsDirectoryExist check directory is exist
 func IsExist(path string) bool {
 	return false
