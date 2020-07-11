@@ -2,6 +2,18 @@ package dir
 
 import (
 	"errors"
+	"os"
+	"strings"
+)
+
+const (
+	windowsSeparator = "\\"
+	separator        = "/"
+)
+
+var (
+	// PathSeparator defines path separator
+	PathSeparator = string(os.PathSeparator)
 )
 
 // Dir defines basic directory struct
@@ -57,4 +69,18 @@ func Copy(dest string, src ...string) error {
 // Delete files or directories
 func Delete(fullname ...string) error {
 	return errors.New("not implement yet")
+}
+
+// replace mismatch separator to right os separator
+func replace(path string) string {
+	if path == "" {
+		return path
+	}
+
+	if strings.Contains(path, windowsSeparator) {
+		path = strings.ReplaceAll(path, windowsSeparator, PathSeparator)
+	} else {
+		path = strings.ReplaceAll(path, separator, PathSeparator)
+	}
+	return path
 }
