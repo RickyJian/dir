@@ -12,42 +12,24 @@ func TestNew(t *testing.T) {
 		expected *Dir
 	}{
 		{
-			dir: New("/tmp/stickers/"),
-			expected: &Dir{
-				path:     "/tmp/stickers",
-				nodes:    []string{"tmp", "stickers"},
-				fileName: "",
-			},
+			dir:      New("/tmp/stickers/"),
+			expected: &Dir{Path: "/tmp/stickers"},
 		},
 		{
-			dir: New("/tmp/stickers"),
-			expected: &Dir{
-				path:     "/tmp/stickers",
-				nodes:    []string{"tmp", "stickers"},
-				fileName: "",
-			},
+			dir:      New("\\tmp\\stickers\\"),
+			expected: &Dir{Path: "/tmp/stickers"},
 		},
 		{
-			dir: New("/tmp/stickers/dogs"),
-			expected: &Dir{
-				path:     "/tmp/stickers/dogs",
-				nodes:    []string{"tmp", "stickers", "dogs"},
-				fileName: "",
-			},
+			dir:      New("/tmp/stickers"),
+			expected: &Dir{Path: "/tmp/stickers"},
 		},
 		{
-			dir: New("/tmp/stickers/sticker.jpg"),
-			expected: &Dir{
-				path:     "/tmp/stickers",
-				nodes:    []string{"tmp", "stickers", "dogs"},
-				fileName: "sticker.jpg",
-			},
+			dir:      New("\\tmp\\stickers"),
+			expected: &Dir{Path: "/tmp/stickers"},
 		},
 	}
 	for _, test := range tests {
-		assert.Equal(t, test.expected.path, test.dir.path)
-		assert.Equal(t, test.expected.nodes, test.dir.nodes)
-		assert.Equal(t, test.expected.fileName, test.dir.fileName)
+		assert.Equal(t, test.expected.Path, test.dir.Path)
 	}
 }
 

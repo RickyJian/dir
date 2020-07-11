@@ -7,27 +7,33 @@ import (
 )
 
 const (
+	// windowsSeparator defines windows path separator
 	windowsSeparator = "\\"
-	separator        = "/"
+	// separator defines mac or linux path separator
+	separator = "/"
 )
 
 var (
-	// PathSeparator defines path separator
+	// PathSeparator defines string type path separator
 	PathSeparator = string(os.PathSeparator)
 )
 
 // Dir defines basic directory struct
 type Dir struct {
-	path       string
-	nodes      []string
-	fileName   string
-	files      []string
-	permission string
+	Path       string
+	Nodes      []string
+	Filename   string
+	Files      []string
+	Permission string
 }
 
 // New new dir
 func New(path string) *Dir {
-	return new(Dir)
+	path = replace(path)
+	if pathLen := len(path) - 1; path[pathLen:] == PathSeparator {
+		path = path[:pathLen]
+	}
+	return &Dir{Path: replace(path)}
 }
 
 // IsDirectoryExist check directory is exist
