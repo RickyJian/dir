@@ -1,6 +1,7 @@
 package dir
 
 import (
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -33,6 +34,34 @@ func TestNew(t *testing.T) {
 	}
 }
 
+func TestIsExist(t *testing.T) {
+	var tests = []*struct {
+		path         string
+		expected     bool
+		expectedFile os.FileInfo
+	}{
+		{
+			path:     "/",
+			expected: true,
+		},
+		{
+			path:     "dir.go",
+			expected: true,
+		},
+		{
+			path:     "dir2.go",
+			expected: false,
+		},
+	}
+	for _, test := range tests {
+		f, ok := IsExist(test.path)
+		assert.Equal(t, test.expected, ok)
+		if !ok {
+			assert.Nil(t, f)
+		}
+	}
+}
+
 func TestCopy(t *testing.T) {
 }
 
@@ -40,9 +69,6 @@ func TestCreate(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-}
-
-func TestIsExist(t *testing.T) {
 }
 
 func TestIsFileExist(t *testing.T) {

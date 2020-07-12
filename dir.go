@@ -22,7 +22,7 @@ var (
 type Dir struct {
 	Path       string
 	Nodes      []string
-	Filename   string
+	File       os.FileInfo
 	Files      []string
 	Permission string
 }
@@ -36,19 +36,28 @@ func New(path string) *Dir {
 	return &Dir{Path: replace(path)}
 }
 
-// IsDirectoryExist check directory is exist
-func IsExist(path string) bool {
-	return false
+// IsExist check path exist and set File
+func (d *Dir) IsExist() bool {
+	file, ok := IsExist(d.Path)
+	if !ok {
+		return false
+	}
+	d.File = file
+	return true
+}
+
+// IsExist check path is exist and return os.fileInfo
+func IsExist(path string) (os.FileInfo, bool) {
+	file, err := os.Stat(path)
+	if err != nil {
+		return nil, false
+	}
+	return file, true
 }
 
 // Permission show file or directory permission
 func Permission(fullname string) string {
 	return ""
-}
-
-// IsFileExist returns true if file exist
-func IsFileExist(fullname string) bool {
-	return false
 }
 
 // Create files or directories
