@@ -71,11 +71,6 @@ func IsExist(path string) (os.FileInfo, bool) {
 	return file, true
 }
 
-// Permission show file or directory permission
-func Permission(fullname string) string {
-	return ""
-}
-
 // Create files or directories
 func Create(path string, overwrite bool) error {
 	return errors.New("not implement yet")

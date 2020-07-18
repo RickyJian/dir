@@ -71,9 +71,6 @@ func TestCreate(t *testing.T) {
 func TestDelete(t *testing.T) {
 }
 
-func TestIsFileExist(t *testing.T) {
-}
-
 func TestList(t *testing.T) {
 	var tests = []*struct {
 		path          string
@@ -106,9 +103,6 @@ func TestList(t *testing.T) {
 }
 
 func TestMove(t *testing.T) {
-}
-
-func TestPermission(t *testing.T) {
 }
 
 func TestReplace(t *testing.T) {
