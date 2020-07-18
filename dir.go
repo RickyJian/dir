@@ -111,7 +111,7 @@ func List(route string, hidden bool) (int, []string, error) {
 	return len(files), files, nil
 }
 
-// Move fils or directories
+// Move files or directories
 func Move(dest string, src ...string) error {
 	return errors.New("not implement yet")
 }
