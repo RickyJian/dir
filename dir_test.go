@@ -77,38 +77,30 @@ func TestIsFileExist(t *testing.T) {
 func TestList(t *testing.T) {
 	var tests = []*struct {
 		path          string
-		nest          bool
+		hidden        bool
 		expectedNo    int
-		expectedFiles []string
 		expectedError error
 	}{
 		{
 			path:          "dir1",
-			nest:          false,
 			expectedNo:    -1,
-			expectedFiles: []string{},
 			expectedError: ErrFileOrDirectoryNotExist,
 		},
 		{
-			path:          "dir",
-			nest:          false,
-			expectedNo:    5,
-			expectedFiles: []string{"dir.go", "dir_test.go", "error.go", "go.mod", "README.md"},
+			path:          "../dir",
+			hidden:        false,
+			expectedNo:    6,
 			expectedError: nil,
 		},
 		{
 			path:          "dir.go",
-			nest:          false,
 			expectedNo:    -1,
-			expectedFiles: []string{},
 			expectedError: ErrPathIsNotDirectory,
 		},
-		// TODO: nest
 	}
 	for _, test := range tests {
-		no, files, err := List(test.path, test.nest)
+		no, _, err := List(test.path, test.hidden)
 		assert.Equal(t, test.expectedNo, no)
-		assert.Equal(t, test.expectedFiles, files)
 		assert.Equal(t, test.expectedError, err)
 	}
 }

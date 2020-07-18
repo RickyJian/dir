@@ -2,7 +2,9 @@ package dir
 
 import (
 	"errors"
+	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -47,14 +49,13 @@ func (d *Dir) IsExist() bool {
 }
 
 // List returns directory all files or directories
-// If nest is true will show all nest files or directories
-func (d *Dir) List(nest bool) (int, []string, error) {
-	no, nodes, err := List(d.Path, nest)
+func (d *Dir) List(hidden bool) (int, error) {
+	no, files, err := List(d.Path, hidden)
 	if err != nil {
-		return -1, []string{}, err
+		return -1, err
 	}
-	d.Nodes = nodes
-	return no, nodes, nil
+	d.Files = files
+	return no, nil
 }
 
 // IsExist check path is exist and return os.fileInfo
@@ -77,10 +78,33 @@ func Create(path string, overwrite bool) error {
 }
 
 // List returns directory all files or directories
-// If nest is true will show all nest files or directories
-func List(path string, nest bool) (int, []string, error) {
-	// TODO: nest
-	return 0, []string{}, errors.New("not implement yet")
+func List(route string, hidden bool) (int, []string, error) {
+	f, ok := IsExist(route)
+	if !ok {
+		return -1, []string{}, ErrFileOrDirectoryNotExist
+	} else if !f.IsDir() {
+		return -1, []string{}, ErrPathIsNotDirectory
+	}
+
+	routeLen := len(route)
+	if route[routeLen-1:] != PathSeparator {
+		routeLen++
+	}
+	var files []string
+	err := filepath.Walk(route, func(path string, info os.FileInfo, err error) error {
+		if route == path {
+			// skip first directory
+			return nil
+		} else if file := filepath.Base(path); !hidden && file[:1] == "." {
+			return filepath.SkipDir
+		}
+		files = append(files, path[routeLen:])
+		return nil
+	})
+	if err != nil {
+		return -1, []string{}, fmt.Errorf("walk through directory failed: %w", err)
+	}
+	return len(files), files, nil
 }
 
 // Move fils or directories
