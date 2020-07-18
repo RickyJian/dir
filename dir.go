@@ -35,7 +35,11 @@ func New(path string) *Dir {
 	if pathLen := len(path) - 1; path[pathLen:] == PathSeparator {
 		path = path[:pathLen]
 	}
-	return &Dir{Path: replace(path)}
+	nodes := strings.Split(filepath.Dir(path), PathSeparator)
+	return &Dir{
+		Path:  replace(path),
+		Nodes: nodes,
+	}
 }
 
 // IsExist check path exist and set File
