@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 const (
@@ -23,10 +24,13 @@ var (
 // Dir defines basic directory struct
 type Dir struct {
 	Path       string
+	Name       string
+	Size       int64
+	ModTime    time.Time
+	IsDir      bool
+	Permission os.FileMode
 	Nodes      []string
-	File       os.FileInfo
 	Files      []string
-	Permission string
 }
 
 // New new dir
@@ -48,7 +52,11 @@ func (d *Dir) IsExist() bool {
 	if !ok {
 		return false
 	}
-	d.File = file
+	d.Name = file.Name()
+	d.Size = file.Size()
+	d.ModTime = file.ModTime()
+	d.IsDir = file.IsDir()
+	d.Permission = file.Mode()
 	return true
 }
 
