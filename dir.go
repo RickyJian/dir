@@ -28,7 +28,7 @@ type Dir struct {
 	Size       int64
 	ModTime    time.Time
 	IsDir      bool
-	Permission os.FileMode
+	Permission *Mode
 	Nodes      []string
 	Files      []string
 }
@@ -56,7 +56,7 @@ func (d *Dir) IsExist() bool {
 	d.Size = file.Size()
 	d.ModTime = file.ModTime()
 	d.IsDir = file.IsDir()
-	d.Permission = file.Mode()
+	d.Permission = ParseMode(file.Mode())
 	return true
 }
 
