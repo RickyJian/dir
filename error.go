@@ -9,4 +9,6 @@ var (
 	ErrPathIsNotDirectory = errors.New("path is not directory")
 	// ErrUnknownDirectoryType defines unknown directory type
 	ErrUnknownDirectoryType = errors.New("unknown directory type")
+	// ErrCannotDeleteRoot defines cannot delete root
+	ErrCannotDeleteRoot = errors.New("cannot delete root")
 )

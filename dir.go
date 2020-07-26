@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"syscall"
 	"time"
 )
 
@@ -81,6 +82,7 @@ func (d *Dir) List(hidden bool) (int, error) {
 }
 
 // Delete file or directory
+// When delete directory it will also delete children files or directories
 func (d *Dir) Delete(dirType Type) error {
 	var path string
 	switch dirType {
@@ -91,7 +93,11 @@ func (d *Dir) Delete(dirType Type) error {
 	default:
 		return ErrUnknownDirectoryType
 	}
-	return Delete(path)
+
+	if err, ok := Delete(path)[path]; ok {
+		return err
+	}
+	return nil
 }
 
 // IsExist check path is exist and return os.fileInfo
@@ -148,9 +154,25 @@ func Copy(dest string, src ...string) error {
 	return errors.New("not implement yet")
 }
 
-// Delete files or directories
-func Delete(fullname ...string) error {
-	return errors.New("not implement yet")
+// Delete files or directories include children files or directories
+func Delete(paths ...string) map[string]error {
+	errMap := make(map[string]error)
+	for _, path := range paths {
+		if path == Root {
+			errMap[path] = ErrCannotDeleteRoot
+		} else if err := os.RemoveAll(path); err == nil {
+			// do nothing
+		} else if pathErr := new(os.PathError); errors.As(err, &pathErr) {
+			// syscall.ENOENT is `no such file or directory`
+			// in this package we will not return this error.
+			// if you want to check file exist, you can use
+			// `IsExist` function.
+			if !errors.Is(pathErr, syscall.ENOENT) {
+				errMap[pathErr.Path] = pathErr.Err
+			}
+		}
+	}
+	return errMap
 }
 
 // replace mismatch separator to right os separator

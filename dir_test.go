@@ -63,12 +63,11 @@ func TestIsExist(t *testing.T) {
 }
 
 func TestCopy(t *testing.T) {
+	// TODO: mock test
 }
 
 func TestCreate(t *testing.T) {
-}
-
-func TestDelete(t *testing.T) {
+	// TODO: mock test
 }
 
 func TestList(t *testing.T) {
@@ -103,6 +102,11 @@ func TestList(t *testing.T) {
 }
 
 func TestMove(t *testing.T) {
+	// TODO: mock test
+}
+
+func TestDelete(t *testing.T) {
+	// TODO: mock test
 }
 
 func TestReplace(t *testing.T) {
