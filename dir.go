@@ -21,6 +21,16 @@ var (
 	PathSeparator = string(os.PathSeparator)
 )
 
+// Type defines type for `Dir` when do creation or deletion
+type Type int32
+
+const (
+	// Directory defines type to create/delete directory
+	Directory Type = iota
+	// File defines type to create/delete file
+	File
+)
+
 // Dir defines basic directory struct
 type Dir struct {
 	Path       string
@@ -68,6 +78,20 @@ func (d *Dir) List(hidden bool) (int, error) {
 	}
 	d.Files = files
 	return no, nil
+}
+
+// Delete file or directory
+func (d *Dir) Delete(dirType Type) error {
+	var path string
+	switch dirType {
+	case Directory:
+		path = d.Path
+	case File:
+		path = filepath.Join(d.Path, d.Name)
+	default:
+		return ErrUnknownDirectoryType
+	}
+	return Delete(path)
 }
 
 // IsExist check path is exist and return os.fileInfo

@@ -7,4 +7,6 @@ var (
 	ErrFileOrDirectoryNotExist = errors.New("file or directory not found")
 	// ErrPathIsNotDirectory defines path is not directory
 	ErrPathIsNotDirectory = errors.New("path is not directory")
+	// ErrUnknownDirectoryType defines unknown directory type
+	ErrUnknownDirectoryType = errors.New("unknown directory type")
 )
