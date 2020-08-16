@@ -9,7 +9,7 @@ A basic directory package
  - [x] List: list files or directories(include hidden)
  - [ ] Move: move files or directories
  - [ ] Copy: copy files or directories
- - [ ] Delete: copy files or directories
+ - [x] Delete: copy files or directories
  
  # Support
  
