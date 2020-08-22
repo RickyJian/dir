@@ -9,6 +9,10 @@ var (
 	ErrPathIsNotDirectory = errors.New("path is not directory")
 	// ErrEmptyPath defines path is empty
 	ErrEmptyPath = errors.New("empty path")
+	// ErrEmptySrc defines src is empty
+	ErrEmptySrc = errors.New("empty src")
+	// ErrEmptyDest defines dest is empty
+	ErrEmptyDest = errors.New("empty dest")
 	// ErrCannotDeleteRoot defines cannot delete root
 	ErrCannotDeleteRoot = errors.New("cannot delete root")
 )

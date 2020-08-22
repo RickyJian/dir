@@ -22,21 +22,6 @@ var (
 	PathSeparator = string(os.PathSeparator)
 )
 
-// Type defines type for `Dir` when do creation or deletion
-type Type int32
-
-const (
-	// Directory defines type to create/delete directory
-	Directory Type = iota
-	// File defines type to create/delete file
-	File
-)
-
-// Operator is interface that wraps basic io function
-type Operator interface {
-	Delete() error
-}
-
 // Dir defines basic directory struct
 type Dir struct {
 	Path       string
@@ -84,6 +69,16 @@ func (d *Dir) List(hidden bool) (int, error) {
 	}
 	d.Files = files
 	return no, nil
+}
+
+// Move file or directory
+// When name is not empty it will move file; otherwise, it will move directory.
+func (d *Dir) Move(dest string) error {
+	if dest == "" {
+		return ErrEmptyDest
+	}
+
+	return Move(filepath.Join(d.Path, d.Name), dest)
 }
 
 // Delete file or directory
@@ -156,8 +151,14 @@ func List(route string, hidden bool) (int, []string, error) {
 }
 
 // Move files or directories
-func Move(dest string, src ...string) error {
-	return errors.New("not implement yet")
+func Move(src, dest string) error {
+	if src == "" {
+		return ErrEmptySrc
+	} else if dest == "" {
+		return ErrEmptyDest
+	}
+
+	return os.Rename(src, dest)
 }
 
 // Copy files or directories
