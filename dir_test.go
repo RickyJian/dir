@@ -127,3 +127,30 @@ func TestReplace(t *testing.T) {
 		assert.Equal(t, test.expected, replace(test.path))
 	}
 }
+
+func TestIsMoveOperationValid(t *testing.T) {
+	var tests = []*struct {
+		t        MoveOperation
+		expected bool
+	}{
+		{
+			t:        None,
+			expected: true,
+		},
+		{
+			t:        Merge,
+			expected: true,
+		},
+		{
+			t:        Override,
+			expected: true,
+		},
+		{
+			t:        MoveOperation(3),
+			expected: false,
+		},
+	}
+	for _, test := range tests {
+		assert.Equal(t, test.expected, isMoveOperationValid(test.t))
+	}
+}

@@ -71,9 +71,21 @@ func (d *Dir) List(hidden bool) (int, error) {
 	return no, nil
 }
 
+// MoveOperation defines move operation
+type MoveOperation int32
+
+const (
+	// None when destination directory exist, it will return `ErrFileOrDirectoryExist`
+	None MoveOperation = iota
+	// Merge is directory operation. When destination directory exist, it will copy all files in it.
+	Merge
+	// Override. When destination directory exist, it will delete source file or directory then create it.
+	Override
+)
+
 // Move file or directory
 // When name is not empty it will move file; otherwise, it will move directory.
-func (d *Dir) Move(dest string) error {
+func (d *Dir) Move(dest string, op MoveOperation) error {
 	if dest == "" {
 		return ErrEmptyDest
 	}
@@ -178,4 +190,17 @@ func replace(path string) string {
 		path = strings.ReplaceAll(path, separator, PathSeparator)
 	}
 	return path
+}
+
+// isMoveOperationValid check move operation valid
+func isMoveOperationValid(op MoveOperation) bool {
+	switch op {
+	case None,
+		Merge,
+		Override:
+		// valid operation
+	default:
+		return false
+	}
+	return true
 }
