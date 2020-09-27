@@ -15,4 +15,6 @@ var (
 	ErrEmptyDest = errors.New("empty dest")
 	// ErrCannotDeleteRoot defines cannot delete root
 	ErrCannotDeleteRoot = errors.New("cannot delete root")
+	// ErrOperationInvalid operation is invalid
+	ErrOperationInvalid = errors.New("operation invalid")
 )

@@ -79,21 +79,34 @@ const (
 	None MoveOperation = iota
 	// Merge is directory operation. When destination directory exist, it will copy all files in it.
 	Merge
-	// Override. When destination directory exist, it will delete source file or directory then create it.
+	// Override. When destination directory exist, it will delete source directory then create it.
 	Override
 )
 
-// Move file or directory
+// Move directory
 // When name is not empty it will move file; otherwise, it will move directory.
 func (d *Dir) Move(dest string, op MoveOperation) error {
 	if dest == "" {
 		return ErrEmptyDest
+	} else if !isMoveOperationValid(op) {
+		return ErrOperationInvalid
+	}
+	destFile, exist := IsExist(replace(dest))
+	if exist && !destFile.IsDir() && op == Merge {
+		return ErrOperationInvalid
 	}
 
-	return Move(filepath.Join(d.Path, d.Name), dest)
+	switch op {
+	case None:
+		return os.Rename(filepath.Join(d.Path, d.Name), dest)
+	case Merge:
+
+	case Override:
+	}
+	return nil
 }
 
-// Delete file or directory
+// Delete directory
 // When Name is empty it will delete directory
 func (d *Dir) Delete() error {
 	path := d.Path
