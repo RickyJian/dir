@@ -1,6 +1,6 @@
-module dir
+module github.com/RickyJian/dir
 
-go 1.14
+go 1.15
 
 require (
 	github.com/stretchr/objx v0.2.0 // indirect
