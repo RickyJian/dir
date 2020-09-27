@@ -80,7 +80,7 @@ func TestList(t *testing.T) {
 		{
 			path:          "dir1",
 			expectedNo:    -1,
-			expectedError: ErrFileOrDirectoryNotExist,
+			expectedError: ErrDirectoryNotFound,
 		},
 		{
 			path:          "../dir",

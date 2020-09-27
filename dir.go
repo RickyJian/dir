@@ -28,7 +28,6 @@ type Dir struct {
 	Name       string
 	Size       int64
 	ModTime    time.Time
-	IsDir      bool
 	Permission *Mode
 	Nodes      []string
 	Files      []string
@@ -48,17 +47,19 @@ func New(path string) *Dir {
 }
 
 // IsExist check path exist and set File
-func (d *Dir) IsExist() bool {
+func (d *Dir) IsExist() error {
 	file, ok := IsExist(d.Path)
 	if !ok {
-		return false
+		return ErrDirectoryNotFound
+	} else if !file.IsDir() {
+		return ErrPathIsNotDirectory
 	}
+
 	d.Name = file.Name()
 	d.Size = file.Size()
 	d.ModTime = file.ModTime()
-	d.IsDir = file.IsDir()
 	d.Permission = ParseMode(file.Mode())
-	return true
+	return nil
 }
 
 // List returns directory all files or directories
@@ -149,7 +150,7 @@ func Create(path string, overwrite bool) error {
 func List(route string, hidden bool) (int, []string, error) {
 	f, ok := IsExist(route)
 	if !ok {
-		return -1, []string{}, ErrFileOrDirectoryNotExist
+		return -1, []string{}, ErrDirectoryNotFound
 	} else if !f.IsDir() {
 		return -1, []string{}, ErrPathIsNotDirectory
 	}
