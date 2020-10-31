@@ -109,25 +109,6 @@ func TestDelete(t *testing.T) {
 	// TODO: mock test
 }
 
-func TestReplace(t *testing.T) {
-	var tests = []*struct {
-		path     string
-		expected string
-	}{
-		{
-			path:     "/1/2/3/4",
-			expected: "/1/2/3/4",
-		},
-		{
-			path:     "\\1\\2\\3\\4",
-			expected: "/1/2/3/4",
-		},
-	}
-	for _, test := range tests {
-		assert.Equal(t, test.expected, replace(test.path))
-	}
-}
-
 func TestIsMoveOperationValid(t *testing.T) {
 	var tests = []*struct {
 		t        MoveOperation

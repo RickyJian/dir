@@ -10,13 +10,6 @@ import (
 	"time"
 )
 
-const (
-	// windowsSeparator defines windows path separator
-	windowsSeparator = "\\"
-	// separator defines mac or linux path separator
-	separator = "/"
-)
-
 var (
 	// PathSeparator defines string type path separator
 	PathSeparator = string(os.PathSeparator)
@@ -35,7 +28,7 @@ type Dir struct {
 
 // New new dir
 func New(path string) *Dir {
-	path = replace(path)
+	path = Replace(path)
 	if pathLen := len(path) - 1; path[pathLen:] == PathSeparator {
 		path = path[:pathLen]
 	}
@@ -93,7 +86,7 @@ func (d *Dir) Move(dest string, op MoveOperation) error {
 	} else if !isMoveOperationValid(op) {
 		return ErrOperationInvalid
 	}
-	destFile, exist := IsExist(replace(dest))
+	destFile, exist := IsExist(Replace(dest))
 	if exist && !destFile.IsDir() && op == Merge {
 		return ErrOperationInvalid
 	}
@@ -191,20 +184,6 @@ func Move(src, dest string) error {
 // Copy files or directories
 func Copy(dest string, src ...string) error {
 	return errors.New("not implement yet")
-}
-
-// replace mismatch separator to right os separator
-func replace(path string) string {
-	if path == "" {
-		return path
-	}
-
-	if strings.Contains(path, windowsSeparator) {
-		path = strings.ReplaceAll(path, windowsSeparator, PathSeparator)
-	} else {
-		path = strings.ReplaceAll(path, separator, PathSeparator)
-	}
-	return path
 }
 
 // isMoveOperationValid check move operation valid
