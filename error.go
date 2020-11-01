@@ -7,14 +7,14 @@ var (
 	ErrDirectoryNotFound = errors.New("directory not found")
 	// ErrPathIsNotDirectory defines path is not directory
 	ErrPathIsNotDirectory = errors.New("path is not directory")
+	// ErrInvalidPath defines path is invalid
+	ErrInvalidPath = errors.New("invalid path")
+	// ErrDirectoryExist defines directory exist
+	ErrDirectoryExist = errors.New("directory not found")
 	// ErrEmptyPath defines path is empty
 	ErrEmptyPath = errors.New("empty path")
-	// ErrEmptySrc defines src is empty
-	ErrEmptySrc = errors.New("empty src")
-	// ErrEmptyDest defines dest is empty
-	ErrEmptyDest = errors.New("empty dest")
 	// ErrCannotDeleteRoot defines cannot delete root
 	ErrCannotDeleteRoot = errors.New("cannot delete root")
-	// ErrOperationInvalid operation is invalid
-	ErrOperationInvalid = errors.New("operation invalid")
+	// ErrInvalidOperation defines operation is invalid
+	ErrInvalidOperation = errors.New("invalid operation")
 )

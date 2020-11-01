@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"syscall"
 	"time"
 )
@@ -89,6 +90,11 @@ func (o Operation) isValid() bool {
 	return ok
 }
 
+// Move directory(include files)
+func (d *Dir) Move(dest string, op Operation) error {
+	return Move(dest, d, op)
+}
+
 // Delete directory
 // When Name is empty it will delete directory
 func (d *Dir) Delete() error {
@@ -123,11 +129,6 @@ func IsExist(path string) (os.FileInfo, bool) {
 	return file, true
 }
 
-// Create files or directories
-func Create(path string, overwrite bool) error {
-	return errors.New("not implement yet")
-}
-
 // List subdirectories and files
 func List(route string, hidden bool) ([]string, []string, error) {
 	routeLen := len(route)
@@ -153,6 +154,50 @@ func List(route string, hidden bool) ([]string, []string, error) {
 		return []string{}, []string{}, fmt.Errorf("walk through directory failed: %w", err)
 	}
 	return subs, files, nil
+}
+
+// Move directories(include files)
+func Move(path string, src *Dir, op Operation) error {
+	if !op.isValid() {
+		return ErrInvalidOperation
+	} else if path = strings.TrimSpace(path); path == "" {
+		return ErrEmptyPath
+	}
+
+	path = Replace(path)
+	switch op {
+	case Default:
+		return move(path, src)
+	case Merge:
+		return moveMerge(path, src)
+	case Override:
+		return moveOverride(path, src)
+	}
+	return nil
+}
+
+// move directories(include files) which operation is `Default`
+func move(dest string, src *Dir) error {
+	if _, ok := IsExist(dest); ok {
+		return ErrDirectoryExist
+	}
+	d, b := filepath.Dir(dest), filepath.Base(dest)
+	if d != b {
+		return ErrInvalidPath
+	} else if err := os.Rename(src.Path, dest); err != nil {
+		return fmt.Errorf("failed to move directory: %w", err)
+	}
+	src.Path = dest
+	src.Name = b
+	return nil
+}
+
+func moveMerge(dest string, src *Dir) error {
+	return nil
+}
+
+func moveOverride(dest string, src *Dir) error {
+	return nil
 }
 
 // Copy files or directories
