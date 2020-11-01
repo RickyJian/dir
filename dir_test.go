@@ -109,29 +109,29 @@ func TestDelete(t *testing.T) {
 	// TODO: mock test
 }
 
-func TestIsMoveOperationValid(t *testing.T) {
+func TestIsValid(t *testing.T) {
 	var tests = []*struct {
-		t        MoveOperation
+		op       Operation
 		expected bool
 	}{
 		{
-			t:        None,
+			op:       Default,
 			expected: true,
 		},
 		{
-			t:        Merge,
+			op:       Merge,
 			expected: true,
 		},
 		{
-			t:        Override,
+			op:       Override,
 			expected: true,
 		},
 		{
-			t:        MoveOperation(3),
+			op:       5,
 			expected: false,
 		},
 	}
 	for _, test := range tests {
-		assert.Equal(t, test.expected, isMoveOperationValid(test.t))
+		assert.Equal(t, test.expected, test.op.isValid())
 	}
 }

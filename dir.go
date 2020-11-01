@@ -61,39 +61,32 @@ func (d *Dir) List(hidden bool) error {
 	return nil
 }
 
-// MoveOperation defines move operation
-type MoveOperation int32
+// Operation defines dir operation
+type Operation int32
 
 const (
-	// None when destination directory exist, it will return `ErrFileOrDirectoryExist`
-	None MoveOperation = iota
-	// Merge is directory operation. When destination directory exist, it will copy all files in it.
+	// Default:
+	//   * move - if destination directory exist, it will not move directory and return `ErrDestExist`.
+	Default Operation = iota
+	// Merge:
+	//   * move - if destination directory exist, it will move src files which are not exist in destination directories,
+	//            and if files are exist it will override it.
 	Merge
-	// Override. When destination directory exist, it will delete source directory then create it.
+	// Override:
+	//   * move - if destination directory exist, it will override it.
 	Override
 )
 
-// Move directory
-// When name is not empty it will move file; otherwise, it will move directory.
-func (d *Dir) Move(dest string, op MoveOperation) error {
-	if dest == "" {
-		return ErrEmptyDest
-	} else if !isMoveOperationValid(op) {
-		return ErrOperationInvalid
-	}
-	destFile, exist := IsExist(Replace(dest))
-	if exist && !destFile.IsDir() && op == Merge {
-		return ErrOperationInvalid
-	}
+var moveOperationSet = map[Operation]struct{}{
+	Default:  {},
+	Merge:    {},
+	Override: {},
+}
 
-	switch op {
-	case None:
-		return os.Rename(filepath.Join(d.Path, d.Name), dest)
-	case Merge:
-
-	case Override:
-	}
-	return nil
+// isValid check move operation valid
+func (o Operation) isValid() bool {
+	_, ok := moveOperationSet[o]
+	return ok
 }
 
 // Delete directory
@@ -162,31 +155,7 @@ func List(route string, hidden bool) ([]string, []string, error) {
 	return subs, files, nil
 }
 
-// Move files or directories
-func Move(src, dest string) error {
-	if src == "" {
-		return ErrEmptySrc
-	} else if dest == "" {
-		return ErrEmptyDest
-	}
-
-	return os.Rename(src, dest)
-}
-
 // Copy files or directories
 func Copy(dest string, src ...string) error {
 	return errors.New("not implement yet")
-}
-
-// isMoveOperationValid check move operation valid
-func isMoveOperationValid(op MoveOperation) bool {
-	switch op {
-	case None,
-		Merge,
-		Override:
-		// valid operation
-	default:
-		return false
-	}
-	return true
 }
