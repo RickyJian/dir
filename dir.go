@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 	"syscall"
 	"time"
 )
@@ -22,8 +21,8 @@ type Dir struct {
 	Size       int64
 	ModTime    time.Time
 	Permission *Mode
-	Nodes      []string
 	Files      []string
+	Subs       []string
 }
 
 // New new dir
@@ -32,10 +31,7 @@ func New(path string) *Dir {
 	if pathLen := len(path) - 1; path[pathLen:] == PathSeparator {
 		path = path[:pathLen]
 	}
-	return &Dir{
-		Path:  path,
-		Nodes: strings.Split(filepath.Dir(path), PathSeparator),
-	}
+	return &Dir{Path: path}
 }
 
 // IsExist check path exist and set File
@@ -54,14 +50,15 @@ func (d *Dir) IsExist() error {
 	return nil
 }
 
-// List returns directory all files or directories
-func (d *Dir) List(hidden bool) (int, error) {
-	no, files, err := List(d.Path, hidden)
+// List subdirectories and files
+func (d *Dir) List(hidden bool) error {
+	sub, files, err := List(d.Path, hidden)
 	if err != nil {
-		return -1, err
+		return err
 	}
 	d.Files = files
-	return no, nil
+	d.Subs = sub
+	return nil
 }
 
 // MoveOperation defines move operation
@@ -138,34 +135,31 @@ func Create(path string, overwrite bool) error {
 	return errors.New("not implement yet")
 }
 
-// List returns directory all files or directories
-func List(route string, hidden bool) (int, []string, error) {
-	f, ok := IsExist(route)
-	if !ok {
-		return -1, []string{}, ErrDirectoryNotFound
-	} else if !f.IsDir() {
-		return -1, []string{}, ErrPathIsNotDirectory
-	}
-
+// List subdirectories and files
+func List(route string, hidden bool) ([]string, []string, error) {
 	routeLen := len(route)
 	if route[routeLen-1:] != PathSeparator {
 		routeLen++
 	}
-	var files []string
+
+	var files, subs []string
 	err := filepath.Walk(route, func(path string, info os.FileInfo, err error) error {
 		if route == path {
 			// skip first directory
 			return nil
 		} else if file := filepath.Base(path); !hidden && file[:1] == "." {
 			return filepath.SkipDir
+		} else if isDir := info.IsDir(); isDir {
+			subs = append(subs, path[routeLen:])
+		} else if !isDir {
+			files = append(files, path[routeLen:])
 		}
-		files = append(files, path[routeLen:])
 		return nil
 	})
 	if err != nil {
-		return -1, []string{}, fmt.Errorf("walk through directory failed: %w", err)
+		return []string{}, []string{}, fmt.Errorf("walk through directory failed: %w", err)
 	}
-	return len(files), files, nil
+	return subs, files, nil
 }
 
 // Move files or directories
