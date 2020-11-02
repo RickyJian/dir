@@ -137,22 +137,28 @@ func List(route string, hidden bool) ([]string, []string, error) {
 }
 
 // Move directories(include files)
-func Move(path string, src *Dir, op Operation) error {
+func Move(dest string, src *Dir, op Operation) error {
 	if !op.isValid() {
 		return ErrInvalidOperation
-	} else if path = strings.TrimSpace(path); path == "" {
+	} else if dest = strings.TrimSpace(dest); dest == "" {
 		return ErrEmptyPath
 	}
+	name := filepath.Base(dest)
+	if filepath.Dir(dest) != name {
+		return ErrInvalidPath
+	}
 
-	path = Replace(path)
+	dest = Replace(dest)
 	switch op {
 	case Default:
-		return move(path, src)
+		return move(dest, src)
 	case Merge:
-		return moveMerge(path, src)
+		return moveMerge(dest, src)
 	case Override:
-		return moveOverride(path, src)
+		return moveOverride(dest, src)
 	}
+	src.Path = dest
+	src.Name = name
 	return nil
 }
 
@@ -160,15 +166,9 @@ func Move(path string, src *Dir, op Operation) error {
 func move(dest string, src *Dir) error {
 	if _, ok := IsExist(dest); ok {
 		return ErrDirectoryExist
-	}
-	d, b := filepath.Dir(dest), filepath.Base(dest)
-	if d != b {
-		return ErrInvalidPath
 	} else if err := os.Rename(src.Path, dest); err != nil {
 		return fmt.Errorf("failed to move directory: %w", err)
 	}
-	src.Path = dest
-	src.Name = b
 	return nil
 }
 
@@ -177,6 +177,15 @@ func moveMerge(dest string, src *Dir) error {
 }
 
 func moveOverride(dest string, src *Dir) error {
+	if _, ok := IsExist(dest); ok {
+		if err := deleteDir(dest); err != nil {
+			return err
+		}
+	}
+
+	if err := os.Rename(src.Path, dest); err != nil {
+		return fmt.Errorf("failed to move directory: %w", err)
+	}
 	return nil
 }
 
