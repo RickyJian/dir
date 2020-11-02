@@ -95,29 +95,9 @@ func (d *Dir) Move(dest string, op Operation) error {
 	return Move(dest, d, op)
 }
 
-// Delete directory
-// When Name is empty it will delete directory
+// Delete directory(include files)
 func (d *Dir) Delete() error {
-	path := d.Path
-	if path == "" {
-		return ErrEmptyPath
-	} else if path == Root {
-		return ErrCannotDeleteRoot
-	} else if d.Name != "" {
-		path = filepath.Join(d.Path, d.Name)
-	}
-
-	if err := os.RemoveAll(path); err == nil {
-		// do nothing
-	} else if pathErr := new(os.PathError); errors.As(err, &pathErr) &&
-		!errors.Is(pathErr, syscall.ENOENT) {
-		// syscall.ENOENT is `no such file or directory`
-		// in this package we will not return this error.
-		// if you want to check file exist, you can use
-		// `IsExist` function.
-		return pathErr.Err
-	}
-	return nil
+	return Delete(d.Path)
 }
 
 // IsExist check path is exist and return os.fileInfo
@@ -197,6 +177,32 @@ func moveMerge(dest string, src *Dir) error {
 }
 
 func moveOverride(dest string, src *Dir) error {
+	return nil
+}
+
+// Delete directory(include files)
+func Delete(path string) error {
+	if path = strings.TrimSpace(path); path == "" {
+		return ErrEmptyPath
+	} else if filepath.Dir(path) != filepath.Base(path) {
+		return ErrInvalidPath
+	} else if path == Root {
+		return ErrCannotDeleteRoot
+	}
+	return deleteDir(path)
+}
+
+func deleteDir(path string) error {
+	if err := os.RemoveAll(path); err == nil {
+		// do nothing
+	} else if pathErr := new(os.PathError); errors.As(err, &pathErr) &&
+		!errors.Is(pathErr, syscall.ENOENT) {
+		// syscall.ENOENT is `no such file or directory`
+		// in this package we will not return this error.
+		// if you want to check file exist, you can use
+		// `IsExist` function.
+		return pathErr.Err
+	}
 	return nil
 }
 
