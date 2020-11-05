@@ -26,3 +26,26 @@ func Replace(path string) string {
 	}
 	return strings.ReplaceAll(path, doubleBackslash, separator)
 }
+
+// Diff returns move and override directories and files
+func Diff(dest, src []string) ([]string, []string) {
+	if len(src) == 0 {
+		return []string{}, []string{}
+	} else if len(dest) == 0 {
+		return src, []string{}
+	}
+
+	destSet := make(map[string]struct{})
+	for _, d := range dest {
+		destSet[d] = struct{}{}
+	}
+	var plus, minus []string
+	for _, s := range src {
+		if _, ok := destSet[s]; ok {
+			minus = append(minus, s)
+		} else {
+			plus = append(plus, s)
+		}
+	}
+	return plus, minus
+}
