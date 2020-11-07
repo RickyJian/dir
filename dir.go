@@ -173,10 +173,6 @@ func Move(dest string, src *Dir, op Operation) error {
 	} else if dest = strings.TrimSpace(dest); dest == "" {
 		return ErrEmptyPath
 	}
-	name := filepath.Base(dest)
-	if filepath.Dir(dest) != name {
-		return ErrInvalidPath
-	}
 
 	dest = Replace(dest)
 	switch op {
@@ -188,7 +184,7 @@ func Move(dest string, src *Dir, op Operation) error {
 		return moveOverride(dest, src)
 	}
 	src.Path = dest
-	src.Name = name
+	src.Name = filepath.Base(dest)
 	return nil
 }
 
@@ -223,10 +219,12 @@ func moveOverride(dest string, src *Dir) error {
 func Delete(path string) error {
 	if path = strings.TrimSpace(path); path == "" {
 		return ErrEmptyPath
-	} else if filepath.Dir(path) != filepath.Base(path) {
-		return ErrInvalidPath
 	} else if path == Root {
 		return ErrCannotDeleteRoot
+	} else if info, ok := IsExist(path); !ok {
+		return ErrDirectoryNotFound
+	} else if !info.IsDir() {
+		return ErrPathIsNotDirectory
 	}
 	return deleteDir(path)
 }

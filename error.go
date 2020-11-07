@@ -7,8 +7,6 @@ var (
 	ErrDirectoryNotFound = errors.New("directory not found")
 	// ErrPathIsNotDirectory defines path is not directory
 	ErrPathIsNotDirectory = errors.New("path is not directory")
-	// ErrInvalidPath defines path is invalid
-	ErrInvalidPath = errors.New("invalid path")
 	// ErrDirectoryExist defines directory exist
 	ErrDirectoryExist = errors.New("directory not found")
 	// ErrEmptyPath defines path is empty
