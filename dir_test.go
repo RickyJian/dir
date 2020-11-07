@@ -62,14 +62,6 @@ func TestIsExist(t *testing.T) {
 	}
 }
 
-func TestCopy(t *testing.T) {
-	// TODO: mock test
-}
-
-func TestCreate(t *testing.T) {
-	// TODO: mock test
-}
-
 func TestList(t *testing.T) {
 	var tests = []*struct {
 		path          string
@@ -99,14 +91,6 @@ func TestList(t *testing.T) {
 		assert.Equal(t, test.expectedNo, no)
 		assert.Equal(t, test.expectedError, err)
 	}
-}
-
-func TestMove(t *testing.T) {
-	// TODO: mock test
-}
-
-func TestDelete(t *testing.T) {
-	// TODO: mock test
 }
 
 func TestIsValid(t *testing.T) {
