@@ -3,6 +3,7 @@ package dir
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -49,6 +50,11 @@ func (d *Dir) IsExist() error {
 	d.ModTime = file.ModTime()
 	d.Permission = ParseMode(file.Mode())
 	return nil
+}
+
+// Get current path directories and files
+func (d *Dir) Get(hidden bool) ([]string, []string, error) {
+	return Get(d.Path, hidden)
 }
 
 // List subdirectories and files
@@ -109,24 +115,45 @@ func IsExist(path string) (os.FileInfo, bool) {
 	return file, true
 }
 
+// Get current path directories and files
+func Get(path string, hidden bool) ([]string, []string, error) {
+	infos, err := ioutil.ReadDir(path)
+	if err != nil {
+		return []string{}, []string{}, fmt.Errorf("failed to read directory: %w", err)
+	}
+
+	var dirs, files []string
+	for _, info := range infos {
+		if name := info.Name(); info.IsDir() {
+			dirs = append(dirs, name)
+		} else {
+			if !hidden && name[:1] == Hidden {
+				continue
+			}
+			files = append(files, name)
+		}
+	}
+	return dirs, files, nil
+}
+
 // List subdirectories and files
-func List(route string, hidden bool) ([]string, []string, error) {
-	routeLen := len(route)
-	if route[routeLen-1:] != PathSeparator {
+func List(path string, hidden bool) ([]string, []string, error) {
+	routeLen := len(path)
+	if path[routeLen-1:] != PathSeparator {
 		routeLen++
 	}
 
-	var files, subs []string
-	err := filepath.Walk(route, func(path string, info os.FileInfo, err error) error {
-		if route == path {
+	var subs, files []string
+	err := filepath.Walk(path, func(route string, info os.FileInfo, err error) error {
+		if path == route {
 			// skip first directory
 			return nil
-		} else if file := filepath.Base(path); !hidden && file[:1] == "." {
+		} else if !hidden && info.Name()[:1] == Hidden {
 			return filepath.SkipDir
-		} else if isDir := info.IsDir(); isDir {
-			subs = append(subs, path[routeLen:])
-		} else if !isDir {
-			files = append(files, path[routeLen:])
+		} else if info.IsDir() {
+			subs = append(subs, route[routeLen:])
+		} else {
+			files = append(files, route[routeLen:])
 		}
 		return nil
 	})
